@@ -1,10 +1,6 @@
 # Etherdiamondchain
 ETD
-This file is the source code of Etherdiamondchain, developed on the public chain of the bitcoin and the Ethereum workshop. 
-This is the original source code. After developing its own technical community forum, 
-we welcome all the big technology and big cafes to upgrade and iterate. 
-We build the technical framework of the hybrid public chain, from the ether workshop The side chain is developed, and you are welcome to correct it.
-
+This file is the source code of Etherdiamondchain, developed on the public chain of the bitcoin and ethereum workshop. This is the original source code. After developing its own technical community forum, we welcome all the big technology and big cafes to upgrade and iterate. We build the technical framework of the hybrid public chain, from the ether workshop With the development of the side chain, it will have its own main chain in the future. It is expected that the public chain construction will be completed before 2019.
 #include "Block.h"
 
 #include <ctime>
@@ -893,10 +889,8 @@ void Block::cleanup()
                   << m_previousBlock.hash();
 
     resetCurrent();
-    -General bitcoin questions and/or support requests are best directed to the [Bitcoin StackExchange](https://bitcoin.stackexchange.com).
-+For reporting security issues, please read instructions at https://bitcoincore.org/en/contact/.
- 
--For reporting security issues, please read instructions at [https://bitcoincore.org/en/contact/](https://bitcoincore.org/en/contact/).
+    -General bitcoin questions and/or support requests are best directed to the [Bitcoin StackExchange]
+
 +If the node is "stuck" during sync or giving "block checksum mismatch" errors, please ensure your hardware is stable by running memtest and observe CPU temperature with a load-test tool such as linpack before creating an issue! -->
  
 -If the node is "stuck" during sync or giving "block checksum mismatch" errors, please ensure your hardware is stable by running memtest and observe CPU temperature with a load-test tool such as linpack before creating an issue!
@@ -922,12 +916,7 @@ void Block::cleanup()
 -This is normally the contents of a `debug.log` or `config.log` file. Raw text or a link to a pastebin type site are preferred.
 +<!-- Any extra information that might be useful in the debugging process. -->
 +<!--- This is normally the contents of a `debug.log` or `config.log` file. Raw text or a link to a pastebin type site are preferred. -->
-@@ -1,5 +1,5 @@
- # ===========================================================================
--#      http://www.gnu.org/software/autoconf-archive/ax_boost_chrono.html
-+#     https://www.gnu.org/software/autoconf-archive/ax_boost_chrono.html
- # ===========================================================================
- #
+
  # SYNOPSIS
  @@ -8,7 +8,7 @@
  #
@@ -936,8 +925,6 @@ void Block::cleanup()
 -#   Test for System library from the Boost C++ libraries. The macro requires
 +#   Test for Chrono library from the Boost C++ libraries. The macro requires
  #   a preceding call to AX_BOOST_BASE. Further documentation is available at
- #   <http://randspringer.de/boost/index.html>.
- #
  @@ -29,7 +29,7 @@
  #   and this notice are preserved. This file is offered as-is, without any
  #   warranty.
@@ -956,16 +943,7 @@ void Block::cleanup()
                     ax_cv_boost_chrono=yes, ax_cv_boost_chrono=no)
  			 CXXFLAGS=$CXXFLAGS_SAVE
               AC_LANG_POP([C++])
-View  
-10  build-aux/m4/ax_boost_unit_test_framework.m4
-@@ -1,6 +1,6 @@
--# ================================================================================
--#  http://www.gnu.org/software/autoconf-archive/ax_boost_unit_test_framework.html
--# ================================================================================
-+# =================================================================================
-+#  https://www.gnu.org/software/autoconf-archive/ax_boost_unit_test_framework.html
-+# =================================================================================
- #
+
  # SYNOPSIS
  #
  @@ -29,7 +29,7 @@
