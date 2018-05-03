@@ -1,6 +1,6 @@
 # Etherdiamondchain
 ETD
-This file is the source code of Etherdiamondchain, developed on the public chain of the bitcoin and ethereum workshop. This is the original source code. After developing its own technical community forum, we welcome all the big technology and big cafes to upgrade and iterate. We build the technical framework of the hybrid public chain, from the ether workshop With the development of the side chain, it will have its own main chain in the future. It is expected that the public chain construction will be completed before 2019.
+This file is the source code of Etherdiamondchain, which is developed on the public chain of bitcoin and eitong. This is the original source code. After developing its own technical community forum, we welcome all the technical talents to upgrade and iterate. We build the technical framework of the hybrid public chain, from the ether workshop With the development of the side chain, it will have its own main chain in the future. It is expected that the public chain construction will be completed before 2019.
 #include "Block.h"
 
 #include <ctime>
