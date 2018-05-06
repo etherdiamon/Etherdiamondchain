@@ -1,0 +1,10 @@
+3  n.snapcraft.yaml
+ @-19，8+19，5@部分：
+      插件: n.cmake
+      建造-包:
+        - 构建要素
+ -      - libboost-全dev
+        - libgmp-dev
+        - libleveldb-dev
+ -      - libmicrohttpd-dev
+ -      - libminiupnpc-dev
