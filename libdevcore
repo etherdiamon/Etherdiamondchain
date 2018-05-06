@@ -1,0 +1,194 @@
+// Thread-safe
+ BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(
+     g_clogLogger, boost::log::sources::severity_channel_logger_mt<>);
+-#define clogSimple(SEVERITY, CHANNEL)                      \
++#define clog(SEVERITY, CHANNEL)                            \
+     BOOST_LOG_STREAM_WITH_PARAMS(dev::g_clogLogger::get(), \
+         (boost::log::keywords::severity = SEVERITY)(boost::log::keywords::channel = CHANNEL))
+ 
+View  
+2  libdevcore/OverlayDB.h
+ @@ -35,7 +35,7 @@ class OverlayDB: public MemoryDB
+ public:
+     explicit OverlayDB(std::unique_ptr<db::DatabaseFace> _db = nullptr)
+       : m_db(_db.release(), [](db::DatabaseFace* db) {
+-            clogSimple(14, "overlaydb") << "Closing state DB";
++            clog(14, "overlaydb") << "Closing state DB";
+             delete db;
+         })
+     {}
+View  
+4  libethashseal/EthashAux.cpp
+ @@ -149,7 +149,7 @@ EthashAux::FullAllocation::FullAllocation(ethash_light_t _light, ethash_callback
+ //	cdebug << "Called OK.";
+     if (!full)
+     {
+-        clogSimple(1, "DAG") << "DAG Generation Failure. Reason: " << strerror(errno);
++        clog(1, "DAG") << "DAG Generation Failure. Reason: " << strerror(errno);
+         BOOST_THROW_EXCEPTION(ExternalFunctionFailure() << errinfo_externalFunction("ethash_full_new"));
+     }
+ }
+ @@ -167,7 +167,7 @@ bytesConstRef EthashAux::FullAllocation::data() const
+ static std::function<int(unsigned)> s_dagCallback;
+ static int dagCallbackShim(unsigned _p)
+ {
+-    clogSimple(1, "DAG") << "Generating DAG file. Progress: " << toString(_p) << "%";
++    clog(1, "DAG") << "Generating DAG file. Progress: " << toString(_p) << "%";
+     return s_dagCallback ? s_dagCallback(_p) : 0;
+ }
+ 
+View  
+9  libethereum/BlockChainSync.cpp
+ @@ -509,8 +509,7 @@ void BlockChainSync::onPeerBlockHeaders(std::shared_ptr<EthereumPeer> _peer, RLP
+             {
+                 // Start of the header chain in m_headers doesn't match our known chain,
+                 // probably we've downloaded other fork
+-                clogSimple(0, "sync")
+-                    << "Unknown parent of the downloaded headers, restarting sync";
++                clog(0, "sync") << "Unknown parent of the downloaded headers, restarting sync";
+                 restartSync();
+                 return;
+             }
+ @@ -527,8 +526,8 @@ void BlockChainSync::onPeerBlockHeaders(std::shared_ptr<EthereumPeer> _peer, RLP
+                 if ((prevBlock && prevBlock->hash != info.parentHash()) || (blockNumber == m_lastImportedBlock + 1 && info.parentHash() != m_lastImportedBlockHash))
+                 {
+                     // mismatching parent id, delete the previous block and don't add this one
+-                    clogSimple(0, "sync") << "Unknown block header " << blockNumber << " "
+-                                          << info.hash() << " (Restart syncing)";
++                    clog(0, "sync") << "Unknown block header " << blockNumber << " " << info.hash()
++                                    << " (Restart syncing)";
+                     _peer->addRating(-1);
+                     restartSync();
+                     return ;
+ @@ -697,7 +696,7 @@ void BlockChainSync::collectBlocks()
+ 
+     if (host().bq().unknownFull())
+     {
+-        clogSimple(0, "sync") << "Too many unknown blocks, restarting sync";
++        clog(0, "sync") << "Too many unknown blocks, restarting sync";
+         restartSync();
+         return;
+     }
+View  
+4  libethereum/State.cpp
+ @@ -79,7 +79,7 @@ OverlayDB State::openDB(fs::path const& _basePath, h256 const& _genesisHash, Wit
+ 
+     if (_we == WithExisting::Kill)
+     {
+-        clogSimple(14, "statedb") << "Killing state database (WithExisting::Kill).";
++        clog(14, "statedb") << "Killing state database (WithExisting::Kill).";
+         fs::remove_all(path / fs::path("state"));
+     }
+ 
+ @@ -90,7 +90,7 @@ OverlayDB State::openDB(fs::path const& _basePath, h256 const& _genesisHash, Wit
+     try
+     {
+         std::unique_ptr<db::DatabaseFace> db(new db::DBImpl(path / fs::path("state")));
+-        clogSimple(14, "statedb") << "Opened state DB.";
++        clog(14, "statedb") << "Opened state DB.";
+         return OverlayDB(std::move(db));
+     }
+     catch (boost::exception const& ex)
+View  
+13  libp2p/NodeTable.cpp
+ @@ -204,8 +204,8 @@ void NodeTable::doDiscover(NodeID _node, unsigned _round, shared_ptr<set<shared_
+     {
+         if (_ec)
+             // we can't use m_logger here, because captured this might be already destroyed
+-            clogSimple(10, "discov") << "Discovery timer was probably cancelled: " << _ec.value()
+-                                     << " " << _ec.message();
++            clog(10, "discov") << "Discovery timer was probably cancelled: " << _ec.value() << " "
++                               << _ec.message();
+ 
+         if (_ec.value() == boost::asio::error::operation_aborted || m_timers.isStopped())
+             return;
+ @@ -539,9 +539,8 @@ void NodeTable::doCheckEvictions()
+     {
+         if (_ec)
+             // we can't use m_logger here, because captured this might be already destroyed
+-            clogSimple(10, "discov")
+-                << "Check Evictions timer was probably cancelled: " << _ec.value() << " "
+-                << _ec.message();
++            clog(10, "discov") << "Check Evictions timer was probably cancelled: " << _ec.value()
++                               << " " << _ec.message();
+ 
+         if (_ec.value() == boost::asio::error::operation_aborted || m_timers.isStopped())
+             return;
+ @@ -573,8 +572,8 @@ void NodeTable::doDiscovery()
+     {
+         if (_ec)
+             // we can't use m_logger here, because captured this might be already destroyed
+-            clogSimple(10, "discov") << "Discovery timer was probably cancelled: " << _ec.value()
+-                                     << " " << _ec.message();
++            clog(10, "discov") << "Discovery timer was probably cancelled: " << _ec.value() << " "
++                               << _ec.message();
+ 
+         if (_ec.value() == boost::asio::error::operation_aborted || m_timers.isStopped())
+             return;
+View  
+4  libp2p/Session.cpp
+ @@ -116,7 +116,7 @@ template <class T> vector<T> randomSelection(vector<T> const& _t, unsigned _n)
+ bool Session::readPacket(uint16_t _capId, PacketType _t, RLP const& _r)
+ {
+     m_lastReceived = chrono::steady_clock::now();
+-    clogSimple(14, "net") << "-> " << _t << " " << _r;
++    clog(14, "net") << "-> " << _t << " " << _r;
+     try // Generic try-catch block designed to capture RLP format errors - TODO: give decent diagnostics, make a bit more specific over what is caught.
+     {
+         // v4 frame headers are useless, offset packet type used
+ @@ -214,7 +214,7 @@ bool Session::checkPacket(bytesConstRef _msg)
+ void Session::send(bytes&& _msg)
+ {
+     bytesConstRef msg(&_msg);
+-    clogSimple(15, "net") << "<- " << RLP(msg.cropped(1));
++    clog(15, "net") << "<- " << RLP(msg.cropped(1));
+     if (!checkPacket(msg))
+         cnetwarn << "INVALID PACKET CONSTRUCTED!";
+ 
+View  
+4  libweb3jsonrpc/IpcServerBase.cpp
+ @@ -85,7 +85,7 @@ template <class S> bool IpcServerBase<S>::SendResponse(string const& _response,
+         else
+             fullyWritten = true;
+     } while (!fullyWritten && !errorOccured);
+-    clogSimple(10, "rpc") << _response;
++    clog(10, "rpc") << _response;
+     return fullyWritten && !errorOccured;
+ }
+ 
+ @@ -136,7 +136,7 @@ template <class S> void IpcServerBase<S>::GenerateResponse(S _connection)
+                 {
+                     std::string r = request.substr(0, i + 1);
+                     request.erase(0, i + 1);
+-                    clogSimple(10, "rpc") << r;
++                    clog(10, "rpc") << r;
+                     OnRequest(r, reinterpret_cast<void*>((intptr_t)_connection));
+                     i = 0;
+                     continue;
+View  
+10  test/tools/libtestutils/Common.cpp
+ @@ -42,7 +42,7 @@ boost::filesystem::path dev::test::getTestPath()
+ 
+     if (ptestPath == nullptr)
+     {
+-        clogSimple(1, "test") << " could not find environment variable ETHEREUM_TEST_PATH \n";
++        clog(1, "test") << " could not find environment variable ETHEREUM_TEST_PATH \n";
+         testPath = "../../test/jsontests";
+     }
+     else
+ @@ -64,11 +64,11 @@ Json::Value dev::test::loadJsonFromFile(fs::path const& _path)
+     Json::Value result;
+     string s = dev::contentsString(_path);
+     if (!s.length())
+-        clogSimple(1, "test") << "Contents of " << _path.string()
+-                              << " is empty. Have you cloned the 'tests' repo branch develop and "
+-                                 "set ETHEREUM_TEST_PATH to its path?";
++        clog(1, "test") << "Contents of " << _path.string()
++                        << " is empty. Have you cloned the 'tests' repo branch develop and "
++                           "set ETHEREUM_TEST_PATH to its path?";
+     else
+-        clogSimple(1, "test") << "FIXTURE: loaded test from file: " << _path.string();
++        clog(1, "test") << "FIXTURE: loaded test from file: " << _path.string();
+ 
+     reader.parse(s, result);
+     return result;
