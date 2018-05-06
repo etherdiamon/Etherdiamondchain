@@ -1,4 +1,4 @@
-# Ether Diamond Chain(ETD)
+# Ether Diamond Union Chain(ETDU)
 This file is the source code of Etherdiamondchain, which is developed on the public chain of Bitcoin and Ethereum. This is the original source code. After developing its own technical community forum, we welcome all the technical talents to upgrade and iterate. We build the technical framework of the hybrid public chain, from the ether workshop With the development of the side chain, it will have its own main chain in the future. It is expected that the public chain construction will be completed before 2019.
 #include "Block.h"
 
@@ -865,141 +865,158 @@ void Block::cleanup()
     LOG(m_logger) << "Committing to disk: stateRoot " << m_currentBlock.stateRoot() << " = "
                   << rootHash() << " = " << toHex(asBytes(db().lookup(rootHash())));
 
-    try
-    {
-        EnforceRefs er(db(), true);
-        rootHash();
-    }
-    catch (BadRoot const&)
-    {
-        cwarn << "Trie corrupt! :-(";
-        throw;
-    }
-
-    m_state.db().commit();	// TODO: State API for this?
-
-    LOG(m_logger) << "Committed: stateRoot " << m_currentBlock.stateRoot() << " = " << rootHash()
-                  << " = " << toHex(asBytes(db().lookup(rootHash())));
-
-    m_previousBlock = m_currentBlock;
-    sealEngine()->populateFromParent(m_currentBlock, m_previousBlock);
-
-    LOG(m_logger) << "finalising enactment. current -> previous, hash is "
-                  << m_previousBlock.hash();
-
-    resetCurrent();
-    -General bitcoin questions and/or support requests are best directed to the [Bitcoin StackExchange]
-
-+If the node is "stuck" during sync or giving "block checksum mismatch" errors, please ensure your hardware is stable by running memtest and observe CPU temperature with a load-test tool such as linpack before creating an issue! -->
- 
--If the node is "stuck" during sync or giving "block checksum mismatch" errors, please ensure your hardware is stable by running memtest and observe CPU temperature with a load-test tool such as linpack before creating an issue!
-+<!-- Describe the issue -->
-+<!--- What behavior did you expect? -->
- 
--### Describe the issue
--#### What behavior did you expect?
-+<!--- What was the actual behavior (provide screenshots if the issue is GUI-related)? -->
- 
--#### What was the actual behavior (provide screenshots if the issue is GUI-related)?
-+<!--- How reliably can you reproduce the issue, what are the steps to do so? -->
- 
--#### How reliably can you reproduce the issue, what are the steps to do so?
-+<!-- What version of Bitcoin Core are you using, where did you get it (website, self-compiled, etc)? -->
- 
--### What version of Bitcoin Core are you using, where did you get it (website, self-compiled, etc)?
-+<!-- What type of machine are you observing the error on (OS/CPU and disk type)? -->
- 
--### What type of machine are you observing the error on (OS/CPU and disk type)?
--
--### Any extra information that might be useful in the debugging process.
--This is normally the contents of a `debug.log` or `config.log` file. Raw text or a link to a pastebin type site are preferred.
-+<!-- Any extra information that might be useful in the debugging process. -->
-+<!--- This is normally the contents of a `debug.log` or `config.log` file. Raw text or a link to a pastebin type site are preferred. -->
-
- # SYNOPSIS
- @@ -8,7 +8,7 @@
- #
- # DESCRIPTION
- #
--#   Test for System library from the Boost C++ libraries. The macro requires
-+#   Test for Chrono library from the Boost C++ libraries. The macro requires
- #   a preceding call to AX_BOOST_BASE. Further documentation is available at
- @@ -29,7 +29,7 @@
- #   and this notice are preserved. This file is offered as-is, without any
- #   warranty.
- 
--#serial 1
-+#serial 4
- 
- AC_DEFUN([AX_BOOST_CHRONO],
- [
- @@ -68,7 +68,7 @@ AC_DEFUN([AX_BOOST_CHRONO],
- 			 CXXFLAGS_SAVE=$CXXFLAGS
- 
- 			 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[@%:@include <boost/chrono.hpp>]],
--                                   [[boost::chrono::system_clock::time_point time;]])],
-+                                   [[boost::chrono::system_clock::time_point* time = new boost::chrono::system_clock::time_point; delete time;]])],
-                    ax_cv_boost_chrono=yes, ax_cv_boost_chrono=no)
- 			 CXXFLAGS=$CXXFLAGS_SAVE
-              AC_LANG_POP([C++])
-
- # SYNOPSIS
- #
- @@ -29,7 +29,7 @@
- #   and this notice are preserved. This file is offered as-is, without any
- #   warranty.
- 
--#serial 19
-+#serial 21
- 
- AC_DEFUN([AX_BOOST_UNIT_TEST_FRAMEWORK],
- [
- @@ -66,7 +66,7 @@ AC_DEFUN([AX_BOOST_UNIT_TEST_FRAMEWORK],
-         [AC_LANG_PUSH([C++])
- 			 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[@%:@include <boost/test/unit_test.hpp>]],
-                                     [[using boost::unit_test::test_suite;
--							 test_suite* test= BOOST_TEST_SUITE( "Unit test example 1" ); return 0;]])],
-+							 test_suite* test= BOOST_TEST_SUITE( "Unit test example 1" ); if (test == NULL) { return 1; } else { return 0; }]])],
-                    ax_cv_boost_unit_test_framework=yes, ax_cv_boost_unit_test_framework=no)
-          AC_LANG_POP([C++])
- 		])
-    # Enable block production with the testnet producers
-producer-name = inita
-producer-name = initb
-producer-name = initc
-producer-name = initd
-producer-name = inite
-producer-name = initf
-producer-name = initg
-producer-name = inith
-producer-name = initi
-producer-name = initj
-producer-name = initk
-producer-name = initl
-producer-name = initm
-producer-name = initn
-producer-name = inito
-producer-name = initp
-producer-name = initq
-producer-name = initr
-producer-name = inits
-producer-name = initt
-producer-name = initu
-# Load the block producer plugin, so you can produce blocks
-plugin = eosio::producer_plugin
-# Wallet plugin
-plugin = eosio::wallet_api_plugin
-# As well as API and HTTP plugins
-plugin = eosio::chain_api_plugin
-plugin = eosio::http_plugin
-
- #the setprods.json argument cannot pass through the function call due to embedded quotes
- echo ===== Start: $step ============ >> $logfile
--echo executing: cleos --wallet-port $wdport -p $biosport -H $bioshost push action eosio setprods \"$(cat setprods.json)\" -p eosio@active | tee -a $logfile
-+echo executing: cleos --wallet-port $wdport -p $biosport -H $bioshost push action eosio setprods setprods.json -p eosio@active | tee -a $logfile
- echo ----------------------- >> $logfile
--programs/cleos/cleos --wallet-port $wdport --wallet-host $wdhost -p $biosport -H $bioshost push action eosio setprods "$(cat setprods.json)" -p eosio@active >> $logfile 2>&1
-+programs/cleos/cleos --wallet-port $wdport --wallet-host $wdhost -p $biosport -H $bioshost push action eosio setprods setprods.json -p eosio@active >> $logfile 2>&1
- echo ==== End: $step ============== >> $logfile
- step=$(($step + 1))
- 
+@@ -23,7 +23,7 @@ workflows:
+            requires:
+              - prep-deps-npm
+              - prep-build
+ -      - job-announce:
+ +      - job-publish:
+            requires:
+              - prep-deps-npm
+              - prep-build
+ @@ -67,14 +67,18 @@ jobs:
+      steps:
+        - checkout
+        - restore_cache:
+ -          key: dependency-cache-{{ checksum "package-lock.json" }}
+ +          key: dependency-cache-{{ .Revision }}
+        - run:
+            name: Install deps via npm
+            command: npm install
+        - save_cache:
+            key: dependency-cache-{{ checksum "package-lock.json" }}
+            paths:
+              - node_modules
+ +      - save_cache:
+ +          key: dependency-cache-{{ .Revision }}
+ +          paths:
+ +            - node_modules
+  
+    prep-deps-firefox:
+      docker:
+ @@ -97,7 +101,7 @@ jobs:
+      steps:
+        - checkout
+        - restore_cache:
+ -          key: dependency-cache-{{ checksum "package-lock.json" }}
+ +          key: dependency-cache-{{ .Revision }}
+        - run:
+            name: build:dist
+            command: npm run dist
+ @@ -116,7 +120,7 @@ jobs:
+      steps:
+        - checkout
+        - restore_cache:
+ -          key: dependency-cache-{{ checksum "package-lock.json" }}
+ +          key: dependency-cache-{{ .Revision }}
+        - run:
+            name: Get Scss Cache key
+            # this allows us to checksum against a whole directory
+ @@ -135,7 +139,7 @@ jobs:
+      steps:
+        - checkout
+        - restore_cache:
+ -          key: dependency-cache-{{ checksum "package-lock.json" }}
+ +          key: dependency-cache-{{ .Revision }}
+        - run:
+            name: Test
+            command: npm run lint
+ @@ -146,7 +150,7 @@ jobs:
+      steps:
+        - checkout
+        - restore_cache:
+ -          key: dependency-cache-{{ checksum "package-lock.json" }}
+ +          key: dependency-cache-{{ .Revision }}
+        - restore_cache:
+            key: build-cache-{{ .Revision }}
+        - run:
+ @@ -162,7 +166,7 @@ jobs:
+      steps:
+        - checkout
+        - restore_cache:
+ -          key: dependency-cache-{{ checksum "package-lock.json" }}
+ +          key: dependency-cache-{{ .Revision }}
+        - restore_cache:
+            key: build-cache-{{ .Revision }}
+        - run:
+ @@ -173,20 +177,23 @@ jobs:
+            paths:
+              - test-artifacts
+  
+ -  job-announce:
+ +  job-publish:
+      docker:
+        - image: circleci/node:8-browsers
+      steps:
+        - checkout
+        - restore_cache:
+ -          key: dependency-cache-{{ checksum "package-lock.json" }}
+ +          key: dependency-cache-{{ .Revision }}
+        - restore_cache:
+            key: build-cache-{{ .Revision }}
+        - restore_cache:
+            key: job-screens-{{ .Revision }}
+        - store_artifacts:
+            path: dist/mascara
+            destination: builds/mascara
+ +      - store_artifacts:
+ +          path: dist/sourcemaps
+ +          destination: builds/sourcemaps
+        - store_artifacts:
+            path: builds
+            destination: builds
+ @@ -196,14 +203,17 @@ jobs:
+        - run:
+            name: build:announce
+            command: ./development/metamaskbot-build-announce.js
+ +      - run:
+ +          name: sentry sourcemaps upload
+ +          command: npm run sentry:publish
+  
+    test-unit:
+      docker:
+        - image: circleci/node:8-browsers
+      steps:
+        - checkout
+        - restore_cache:
+ -          key: dependency-cache-{{ checksum "package-lock.json" }}
+ +          key: dependency-cache-{{ .Revision }}
+        - run:
+            name: test:coverage
+            command: npm run test:coverage
+ @@ -225,7 +235,7 @@ jobs:
+              && sudo mv /usr/bin/firefox /usr/bin/firefox-old
+              && sudo ln -s /opt/firefox58/firefox /usr/bin/firefox
+        - restore_cache:
+ -          key: dependency-cache-{{ checksum "package-lock.json" }}
+ +          key: dependency-cache-{{ .Revision }}
+        - run:
+            name: Get Scss Cache key
+            # this allows us to checksum against a whole directory
+ @@ -244,7 +254,7 @@ jobs:
+      steps:
+        - checkout
+        - restore_cache:
+ -          key: dependency-cache-{{ checksum "package-lock.json" }}
+ +          key: dependency-cache-{{ .Revision }}
+        - run:
+            name: Get Scss Cache key
+            # this allows us to checksum against a whole directory
+ @@ -272,7 +282,7 @@ jobs:
+              && sudo mv /usr/bin/firefox /usr/bin/firefox-old
+              && sudo ln -s /opt/firefox58/firefox /usr/bin/firefox
+        - restore_cache:
+ -          key: dependency-cache-{{ checksum "package-lock.json" }}
+ +          key: dependency-cache-{{ .Revision }}
+        - run:
+            name: Get Scss Cache key
+            # this allows us to checksum against a whole directory
+ @@ -291,7 +301,7 @@ jobs:
+      steps:
+        - checkout
+        - restore_cache:
+ -          key: dependency-cache-{{ checksum "package-lock.json" }}
+ +          key: dependency-cache-{{ .Revision }}
+        - run:
+            name: Get Scss Cache key
+            # this allows us to checksum against a whole directory
