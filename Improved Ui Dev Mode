@@ -1,0 +1,92 @@
+<head>
+      <meta charset="utf-8">
+      <title>MetaMask</title>
+ +
+    </head>
+    <body>
+  
+ @@ -23,4 +24,41 @@
+    background: #F7F7F7;
+  }
+  </style>
+ +
+ +<script>
+ +liveReloadCode(Date.now(), 300)
+ +function liveReloadCode(lastUpdate, updateRate) {
+ +  setTimeout(iter, updateRate)
+ +
+ +  function iter() {
+ +    var xhr = new XMLHttpRequest()
+ +
+ +    xhr.open('GET', '/-/live-reload')
+ +    xhr.onreadystatechange = function() {
+ +      if(xhr.readyState !== 4) {
+ +        return
+ +      }
+ +
+ +      try {
+ +        var change = JSON.parse(xhr.responseText).lastUpdate
+ +
+ +        if(lastUpdate < change) {
+ +          return reload()
+ +        }
+ +      } catch(err) {
+ +      }
+ +
+ +      xhr =
+ +      xhr.onreadystatechange = 
+ +      setTimeout(iter, updateRate)
+ +    }
+ +
+ +    xhr.send()
+ +  }
+ +}
+ +
+ +function reload() {
+ +  window.location.reload()
+ +}
+ + </script>
+  </html>
+View  
+1  fonts
+@@ -0,0 +1 @@
+ +app/fonts
+View  
+1  images
+@@ -0,0 +1 @@
+ +app/images
+View  
+2  package.json
+ @@ -7,7 +7,7 @@
+      "start": "gulp dev",
+      "test": "mocha --require test/helper.js --compilers js:babel-register --recursive",
+      "watch": "mocha watch --compilers js:babel-register --recursive",
+ -    "ui": "beefy development/mocker.js:bundle.js --live --open --cwd development --index=./development/index.html"
+ +    "ui": "beefy ui-dev.js:bundle.js --live --open --index=./development/index.html --cwd ./"
+    },
+    "browserify": {
+      "transform": [
+View  
+10  development/mocker.js → ui-dev.js
+@@ -1,9 +1,9 @@
+  const render = require('react-dom').render
+  const h = require('react-hyperscript')
+ -const Root = require('../ui/app/root')
+ -const configureStore = require('./mockStore')
+ -const states = require('./states')
+ -const Selector = require('./selector')
+ +const Root = require('./ui/app/root')
+ +const configureStore = require('./development/mockStore')
+ +const states = require('./development/states')
+ +const Selector = require('./development/selector')
+  
+  // Query String
+  const qs = require('qs')
+ @@ -13,7 +13,7 @@ const firstState = states[selectedView]
+  updateQueryParams(selectedView)
+  
+  // CSS
+ -const MetaMaskUiCss = require('../ui/css')
+ +const MetaMaskUiCss = require('./ui/css')
+  const injectCss = require('inject-css')
+  
